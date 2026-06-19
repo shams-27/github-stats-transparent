@@ -38,7 +38,7 @@ ul {
 
 li {
   display: inline-flex;
-  font-size: 20px;
+  font-size: 17px;
   margin-right: 2ch;
   align-items: center;
   flex-wrap: nowrap;
