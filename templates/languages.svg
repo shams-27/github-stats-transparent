@@ -23,7 +23,7 @@ h2 {
   margin-top: 0;
   margin-bottom: 0.75em;
   line-height: 24px;
-  font-size: 20px;
+  font-size: 25px;
   font-weight: 600;
   color: #89b4c1;
   fill: #89b4c1;
