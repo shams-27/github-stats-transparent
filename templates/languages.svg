@@ -2,7 +2,7 @@
 <style>
 svg {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 14px;
+  font-size: 20px;
   line-height: 21px;
 }
 
