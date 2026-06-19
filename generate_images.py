@@ -71,11 +71,12 @@ async def generate_languages(s: Stats) -> None:
             ratio = [1, 0]
         progress += (f'<span style="background-color: {color};'
                      f'width: {(ratio[0] * data.get("prop", 0)):0.3f}%;'
-                     f'margin-right: {(ratio[1] * data.get("prop", 0)):0.3f}%;" '
+                     f'margin-right: {(ratio[1] * data.get("prop", 0)):0.3f}%;'
+                     f'opacity: 0.5;" '
                      f'class="progress-item"></span>')
         lang_list += f"""
 <li style="animation-delay: {i * delay_between}ms;">
-<svg xmlns="http://www.w3.org/2000/svg" class="octicon" style="fill:{color};"
+<svg xmlns="http://www.w3.org/2000/svg" class="octicon" style="fill:{color}; opacity: 0.5;"
 viewBox="0 0 16 16" version="1.1" width="16" height="16"><path
 fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8z"></path></svg>
 <span class="lang">{lang}</span>
