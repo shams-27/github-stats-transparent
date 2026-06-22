@@ -109,9 +109,9 @@ async def generate_languages(s: Stats) -> None:
             lang_list += f'<div class="lang-row" style="display: flex; gap: 16px; margin-bottom: 6px; animation-delay: {i * delay_between}ms;">\n'
 
         lang_list += f"""\
-  <div class="lang-item" style="display: flex; align-items: center; gap: 7px; flex: 1; white-space: nowrap; font-size: 13px;">
+  <div class="lang-item" style="display: flex; align-items: center; gap: 7px; flex: 1; white-space: nowrap; font-size: 15px;">
     <svg xmlns="http://www.w3.org/2000/svg" class="octicon" style="fill:{color}; opacity: 0.9; flex-shrink: 0;"
-      viewBox="0 0 16 16" version="1.1" width="14" height="14">
+      viewBox="0 0 16 16" version="1.1" width="16" height="16">
       <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8z"></path>
     </svg>
     <span class="lang">{lang}</span>
