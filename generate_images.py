@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 import asyncio
+import colorsys
 import os
 import re
 
@@ -19,6 +20,33 @@ def generate_output_folder() -> None:
     """
     if not os.path.isdir("generated"):
         os.mkdir("generated")
+
+
+def tune_color_for_dark_background(hex_color: str) -> str:
+    """
+    Adjusts a hex color to ensure it is eye-friendly and readable on dark backgrounds
+    by normalizing its lightness and saturation in the HSL space.
+    """
+    hex_color = hex_color.lstrip("#")
+    if len(hex_color) != 6:
+        return "#a5d6ff"  # Default eye-friendly blue fallback
+
+    # Convert HEX to RGB (0-1 range)
+    r, g, b = [int(hex_color[i:i+2], 16)/255.0 for i in (0, 2, 4)]
+    
+    # Convert RGB to HLS
+    h, l, s = colorsys.rgb_to_hls(r, g, b)
+
+    # Tune for dark background: Ensure lightness is between 55% and 75%
+    l = max(0.55, min(l, 0.75))
+    # Ensure saturation is vivid but not piercing
+    s = max(0.50, min(s, 0.85))
+
+    # Convert back to RGB
+    r, g, b = colorsys.hls_to_rgb(h, l, s)
+    
+    # Convert back to HEX
+    return f"#{int(r*255):02x}{int(g*255):02x}{int(b*255):02x}"
 
 
 ################################################################################
@@ -63,7 +91,8 @@ async def generate_languages(s: Stats) -> None:
     delay_between = 150
     for i, (lang, data) in enumerate(sorted_languages):
         color = data.get("color")
-        color = color if color is not None else "#000000"
+        color = tune_color_for_dark_background(color) if color else "#a5d6ff"
+        
         ratio = [.98, .02]
         if data.get("prop", 0) > 50:
             ratio = [.99, .01]
@@ -72,11 +101,11 @@ async def generate_languages(s: Stats) -> None:
         progress += (f'<span style="background-color: {color};'
                      f'width: {(ratio[0] * data.get("prop", 0)):0.3f}%;'
                      f'margin-right: {(ratio[1] * data.get("prop", 0)):0.3f}%;'
-                     f'opacity: 0.5;" '
+                     f'opacity: 0.85;" '  # Increased opacity slightly for dark mode pop
                      f'class="progress-item"></span>')
         lang_list += f"""
 <li style="animation-delay: {i * delay_between}ms;">
-<svg xmlns="http://www.w3.org/2000/svg" class="octicon" style="fill:{color}; opacity: 0.5;"
+<svg xmlns="http://www.w3.org/2000/svg" class="octicon" style="fill:{color}; opacity: 0.9;"
 viewBox="0 0 16 16" version="1.1" width="16" height="16"><path
 fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8z"></path></svg>
 <span class="lang">{lang}</span>
