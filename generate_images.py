@@ -37,10 +37,10 @@ def tune_color_for_dark_background(hex_color: str) -> str:
     # Convert RGB to HLS
     h, l, s = colorsys.rgb_to_hls(r, g, b)
 
-    # Tune for dark background: Ensure lightness is between 55% and 75%
-    l = max(0.55, min(l, 0.70))
+    # Tune for dark background: ensure lightness is between 55% and 75% for vivid but readable colors
+    l = max(0.55, min(l, 0.75))
     # Ensure saturation is vivid but not piercing
-    s = max(0.50, min(s, 0.70))
+    s = max(0.50, min(s, 0.75))
 
     # Convert back to RGB
     r, g, b = colorsys.hls_to_rgb(h, l, s)
@@ -58,15 +58,20 @@ async def generate_overview(s: Stats) -> None:
     Generate an SVG badge with summary statistics
     :param s: Represents user's GitHub statistics
     """
-    with open("templates/overview.svg", "r") as f:
-        output = f.read()
+    try:
+        with open("templates/overview.svg", "r") as f:
+            output = f.read()
+    except FileNotFoundError:
+        raise FileNotFoundError("Template file 'templates/overview.svg' not found. "
+                                "Ensure the templates directory exists and contains the required SVG files.")
 
     output = re.sub("{{ name }}", await s.name, output)
     output = re.sub("{{ stars }}", f"{await s.stargazers:,}", output)
     output = re.sub("{{ forks }}", f"{await s.forks:,}", output)
     output = re.sub("{{ contributions }}", f"{await s.total_contributions:,}",
                     output)
-    changed = (await s.lines_changed)[0] + (await s.lines_changed)[1]
+    lines = await s.lines_changed
+    changed = lines[0] + lines[1]
     output = re.sub("{{ lines_changed }}", f"{changed:,}", output)
     output = re.sub("{{ views }}", f"{await s.views:,}", output)
     output = re.sub("{{ repos }}", f"{len(await s.all_repos):,}", output)
@@ -81,8 +86,12 @@ async def generate_languages(s: Stats) -> None:
     Generate an SVG badge with summary languages used
     :param s: Represents user's GitHub statistics
     """
-    with open("templates/languages.svg", "r") as f:
-        output = f.read()
+    try:
+        with open("templates/languages.svg", "r") as f:
+            output = f.read()
+    except FileNotFoundError:
+        raise FileNotFoundError("Template file 'templates/languages.svg' not found. "
+                                "Ensure the templates directory exists and contains the required SVG files.")
 
     progress = ""
     lang_list = ""
@@ -106,10 +115,10 @@ async def generate_languages(s: Stats) -> None:
 
         # Two-column grid: open a row div on even indices, close on odd (or last)
         if i % 2 == 0:
-            lang_list += f'<div class="lang-row" style="display: flex; gap: 16px; margin-bottom: 6px; animation-delay: {i * delay_between}ms;">\n'
+            lang_list += '<div class="lang-row" style="display: flex; gap: 16px; margin-bottom: 6px;">\n'
 
         lang_list += f"""\
-  <div class="lang-item" style="display: flex; align-items: center; gap: 7px; flex: 1; white-space: nowrap; font-size: 17px;">
+  <div class="lang-item" style="display: flex; align-items: center; gap: 7px; flex: 1; white-space: nowrap; font-size: 17px; animation-delay: {i * delay_between}ms;">
     <svg xmlns="http://www.w3.org/2000/svg" class="octicon" style="fill:{color}; opacity: 0.9; flex-shrink: 0;"
       viewBox="0 0 16 16" version="1.1" width="16" height="16">
       <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8z"></path>
@@ -153,7 +162,7 @@ async def main() -> None:
     exclude_langs = os.getenv("EXCLUDED_LANGS")
     exclude_langs = ({x.strip() for x in exclude_langs.split(",")}
                      if exclude_langs else None)
-    consider_forked_repos = len(os.getenv("COUNT_STATS_FROM_FORKS")) != 0
+    consider_forked_repos = os.getenv("COUNT_STATS_FROM_FORKS", "").strip().lower() in ("1", "true", "yes")
     async with aiohttp.ClientSession() as session:
         s = Stats(user, access_token, session, exclude_repos=exclude_repos,
                   exclude_langs=exclude_langs,
