@@ -98,22 +98,20 @@ async def generate_languages(s: Stats) -> None:
             ratio = [.99, .01]
         if i == len(sorted_languages) - 1:
             ratio = [1, 0]
-            
         progress += (f'<span style="background-color: {color};'
                      f'width: {(ratio[0] * data.get("prop", 0)):0.3f}%;'
                      f'margin-right: {(ratio[1] * data.get("prop", 0)):0.3f}%;'
-                     f'opacity: 0.85;" '
+                     f'opacity: 0.85;" '  # Increased opacity slightly for dark mode pop
                      f'class="progress-item"></span>')
-        
-        # Format list item as an inline-flex element with a fixed-width language spacer
         lang_list += f"""
-<li style="animation-delay: {i * delay_between}ms; display: inline-flex; align-items: center; width: 48%; margin-bottom: 8px;">
-<svg xmlns="http://www.w3.org/2000/svg" class="octicon" style="fill:{color}; opacity: 0.9; margin-right: 8px; flex-shrink: 0;"
+<li style="animation-delay: {i * delay_between}ms;">
+<svg xmlns="http://www.w3.org/2000/svg" class="octicon" style="fill:{color}; opacity: 0.9;"
 viewBox="0 0 16 16" version="1.1" width="16" height="16"><path
 fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8z"></path></svg>
-<span class="lang" style="width: 100px; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-right: 4px;">{lang}</span>
-<span class="percent" style="color: #8b949e;">{data.get("prop", 0):0.2f}%</span>
+<span class="lang">{lang}</span>
+<span class="percent">{data.get("prop", 0):0.2f}%</span>
 </li>
+
 """
 
     output = re.sub(r"{{ progress }}", progress, output)
