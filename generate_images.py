@@ -38,9 +38,9 @@ def tune_color_for_dark_background(hex_color: str) -> str:
     h, l, s = colorsys.rgb_to_hls(r, g, b)
 
     # Tune for dark background: Ensure lightness is between 55% and 75%
-    l = max(0.55, min(l, 0.75))
+    l = max(0.55, min(l, 0.70))
     # Ensure saturation is vivid but not piercing
-    s = max(0.50, min(s, 0.85))
+    s = max(0.50, min(s, 0.70))
 
     # Convert back to RGB
     r, g, b = colorsys.hls_to_rgb(h, l, s)
